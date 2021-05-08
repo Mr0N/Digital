@@ -11,7 +11,12 @@ namespace Test
     {
         public string Message()
         {
-            return "12345678";
+            return fields;
+        }
+        string fields;
+        public XXX(string one)
+        {
+            this.fields = one;
         }
     }
 
@@ -33,7 +38,7 @@ namespace Test
         static void Main(string[] args)
         {
             DI di = new DI();
-            di.Set<IXXX, XXX>();
+            di.Set<IXXX, XXX>(()=>new XXX("HI!"));
             Console.WriteLine(di.Get<IXXX>().Message());
             di.Set<IYYY, YYY>();
             Console.WriteLine(di.Get<IYYY>().Message());
