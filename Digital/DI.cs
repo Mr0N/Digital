@@ -7,7 +7,7 @@ namespace Digital
 
     public class DI
     {
-        public void Set<Interface, Q>(Func<Interface> func)
+        public void Set<Interface, Q>(Func<Interface> func) where Q:Interface
         {
             var type = typeof(Interface);
             if (dict.ContainsKey(type)) dict.Remove(type, out var xxx);

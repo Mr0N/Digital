@@ -41,7 +41,7 @@ namespace Test
             di.Set<IXXX, XXX>(()=>new XXX("HI!"));
             Console.WriteLine(di.Get<IXXX>().Message());
             di.Set<IYYY, YYY>();
-            Console.WriteLine(di.Get<IYYY>().Message());
+            Console.WriteLine(di.Get<IXXX>().Message());
             Console.ReadKey();
             
         }
