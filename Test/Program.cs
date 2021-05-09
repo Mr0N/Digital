@@ -37,13 +37,19 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            DI di = new DI();
-            di.Set<IXXX, XXX>(()=>new XXX("HI!"));
-            Console.WriteLine(di.Get<IXXX>().Message());
-            di.Set<IYYY, YYY>();
-            Console.WriteLine(di.Get<IXXX>().Message());
+            var di = new DI().Set<IXXX, XXX>(() => new XXX("HI!"))
+                  .NotCreateObject()
+                  .Build();
+            di.Set<IYYY, YYY>().CreateObject().Build();
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine(di.Get<IYYY>().GetHashCode());
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine(di.Get<IXXX>().GetHashCode());
+            }
             Console.ReadKey();
-            
         }
     }
 }

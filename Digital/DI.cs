@@ -7,34 +7,74 @@ namespace Digital
 
     public class DI
     {
-        public void Set<Interface, Q>(Func<Interface> func) where Q:Interface
+        private void CheckRemove(Type type)
         {
-            var type = typeof(Interface);
             if (dict.ContainsKey(type)) dict.Remove(type, out var xxx);
-            dict.TryAdd(type, func as Func<object>);
+            if (objDict.ContainsKey(type)) dict.Remove(type, out var uuu);
         }
-        public void Set<Interface, Q>() where Q : Interface, new()
+        public Config Set<Interface, Q>(Func<Interface> func) where Q : Interface
         {
-            Func<Interface> action;
-            lock (obj)
-                action = () => new Q();
-            var type = typeof(Interface);
-            if (dict.ContainsKey(type)) dict.Remove(type, out var xxx);
-                dict.TryAdd(type, action as Func<object>);
+            Lazy<object> la = new Lazy<object>(() =>
+            {
+                var type = typeof(Interface);
+                CheckRemove(type);
+                dict.TryAdd(type, func as Func<object>);
+                return new object();
+            });
+            Lazy<object> laSet = new Lazy<object>(() =>
+            {
+                var type = typeof(Interface);
+                CheckRemove(type);
+                objDict.TryAdd(type, func());
+                return new object();
+            });
+            return new Config(this, la, laSet);
+        }
+        public Config Set<Interface, Q>() where Q : Interface, new()
+        {
+            Lazy<object> la = new Lazy<object>(() =>
+            {
+                Func<Interface> action;
+                lock (obj)
+                    action = () => new Q();
+                var type = typeof(Interface);
+                CheckRemove(type);
+                dict.TryAdd(type, action as Func<object>); ;
+                return new object();
+            });
+            Lazy<object> laSet = new Lazy<object>(() =>
+            {
+                var type = typeof(Interface);
+                CheckRemove(type);
+                objDict.TryAdd(type, new Q());
+                return new object();
+            });
+            return new Config(this, la, laSet);
         }
         public Interface Get<Interface>()
         {
-            if (!dict.TryGetValue(typeof(Interface), out var value))
+            bool val = dict.TryGetValue(typeof(Interface), out var value);
+            bool objCheck = this.objDict.TryGetValue(typeof(Interface), out var ObjValue);
+            if (!(val || objCheck))
                 throw new Exception("Type not found");
-            lock (obj)
-                return (value as Func<Interface>)();
+            if (value != null)
+            {
+                lock (obj)
+                    return (value as Func<Interface>)();
+            }
+            else if (ObjValue != null)
+                return (Interface)ObjValue;
+            else
+                throw new Exception("Type not found");
         }
         ConcurrentDictionary<Type, Func<object>> dict;
+        internal ConcurrentDictionary<Type, object> objDict;
         object obj;
         public DI()
         {
             this.obj = new object();
             dict = new ConcurrentDictionary<Type, Func<object>>();
+            this.objDict = new ConcurrentDictionary<Type, object>();
         }
     }
 }
