@@ -15,25 +15,25 @@ namespace Digital
         }
         public Config Set<Interface, Q>(Func<Interface> func) where Q : Interface
         {
-            Lazy<object> la = new Lazy<object>(() =>
+            Action la = new Action(() =>
             {
                 var type = typeof(Interface);
                 CheckRemove(type);
                 dict.TryAdd(type, func as Func<object>);
-                return new object();
+                
             });
-            Lazy<object> laSet = new Lazy<object>(() =>
+           Action laSet = new Action(() =>
             {
                 var type = typeof(Interface);
                 CheckRemove(type);
                 objDict.TryAdd(type, func());
-                return new object();
+                
             });
             return new Config(this, la, laSet);
         }
         public Config Set<Interface, Q>() where Q : Interface, new()
         {
-            Lazy<object> la = new Lazy<object>(() =>
+            Action la = new Action(() =>
             {
                 Func<Interface> action;
                 lock (obj)
@@ -41,14 +41,13 @@ namespace Digital
                 var type = typeof(Interface);
                 CheckRemove(type);
                 dict.TryAdd(type, action as Func<object>); ;
-                return new object();
+
             });
-            Lazy<object> laSet = new Lazy<object>(() =>
+            Action laSet = new Action(() =>
             {
                 var type = typeof(Interface);
                 CheckRemove(type);
                 objDict.TryAdd(type, new Q());
-                return new object();
             });
             return new Config(this, la, laSet);
         }

@@ -17,11 +17,11 @@ namespace Digital
         {
             if (this.CreateNewObject)
             {
-                var obj = la.Value;
+                la();
             }
             else
             {
-                var obj = laObj.Value;
+                laObj();
             }
             return dI;
         }
@@ -39,9 +39,9 @@ namespace Digital
         private bool CreateNewObject { set; get; }
 
         DI dI;
-        Lazy<object> la;
-        Lazy<object> laObj;
-        internal Config(DI dI, Lazy<object> la,Lazy<object> laObj)
+        Action la;
+        Action laObj;
+        internal Config(DI dI, Action la,Action laObj)
         {
             this.dI = dI;
             this.la = la;
