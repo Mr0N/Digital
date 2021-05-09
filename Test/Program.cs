@@ -37,6 +37,7 @@ namespace Test
         {
             return "12345678";
         }
+
     }
    
     class Program
@@ -48,17 +49,17 @@ namespace Test
         }
         static void Start()
         {
-           using var di = new DI()
-                  .Set<IYYY, YYY>()
-                  .NotCreateObject()
-                  .Build();
-             
-            Console.WriteLine("Start");
-            for (int i = 0; i < 10; i++)
-            {
-                Console.WriteLine(di.Get<IYYY>().GetHashCode());
-            }
-            
+            var di = new DI()
+                    .Set<IXXX, XXX>(() => new XXX("dsicdsijcsdiocdjsicweo;vweo"))
+                    .NotCreateObject()
+                    .Build();
+
+            Work(di);
+            Console.ReadKey();
+        }
+        static void Work(DI dI)
+        {
+            Console.WriteLine(dI.Get<IXXX>().Message());
         }
     }
 }
