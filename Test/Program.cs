@@ -1,5 +1,7 @@
 ﻿using Digital;
 using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Test
 {
@@ -24,32 +26,39 @@ namespace Test
     {
         public string Message();
     }
-    class YYY : IYYY
+    class YYY : IYYY,IDisposable
     {
+        public void Dispose()
+        {
+            Console.WriteLine("DISPOSE!!!!");
+        }
+
         public string Message()
         {
             return "12345678";
         }
     }
-
-
+   
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            var di = new DI().Set<IXXX, XXX>(() => new XXX("HI!"))
+            Start();
+            Console.ReadKey();
+        }
+        static void Start()
+        {
+           using var di = new DI()
+                  .Set<IYYY, YYY>()
                   .NotCreateObject()
                   .Build();
-            di.Set<IYYY, YYY>().CreateObject().Build();
+             
+            Console.WriteLine("Start");
             for (int i = 0; i < 10; i++)
             {
                 Console.WriteLine(di.Get<IYYY>().GetHashCode());
             }
-            for (int i = 0; i < 10; i++)
-            {
-                Console.WriteLine(di.Get<IXXX>().GetHashCode());
-            }
-            Console.ReadKey();
+            
         }
     }
 }

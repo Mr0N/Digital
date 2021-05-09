@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Digital
 {
 
-    public class DI
+    public class DI:IDisposable
     {
         private void CheckRemove(Type type)
         {
@@ -67,6 +68,22 @@ namespace Digital
             else
                 throw new Exception("Type not found");
         }
+
+        public void Dispose()
+        {
+            if (objDict == null) return;
+            foreach (var item in objDict)
+            {
+                var val = item.Value.GetType()
+                     .GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+                    .Where(a => a.Name == "Dispose");
+                foreach (var xxx in val)
+                {
+                    xxx.Invoke(item.Value,null);
+                }  
+            }
+        }
+
         ConcurrentDictionary<Type, Func<object>> dict;
         internal ConcurrentDictionary<Type, object> objDict;
         object obj;
